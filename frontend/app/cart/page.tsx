@@ -26,9 +26,9 @@ export default function CartPage() {
                 <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
                     {cart.map((item: any) => (
                         <div key={item._id} className="flex items-center p-6 border-b border-zinc-200 dark:border-zinc-800 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-                            <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded-lg bg-zinc-100" />
+                            <img src={item.imageUrl} alt={item.title} className="w-24 h-24 object-cover rounded-lg bg-zinc-100" />
                             <div className="ml-6 flex-grow">
-                                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">{item.name}</h3>
+                                <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">{item.title}</h3>
                                 <p className="text-zinc-500 text-sm mt-1">Quantity: {item.quantity}</p>
                                 <button
                                     onClick={() => removeFromCart(item._id)}

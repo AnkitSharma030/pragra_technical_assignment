@@ -1,10 +1,13 @@
 export const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
 export const apiClient = async <T = any>(endpoint: string, options: RequestInit = {}): Promise<T> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+
     const res = await fetch(`${API_URL}${endpoint}`, {
         ...options,
         headers: {
             'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             ...options.headers,
         },
     });

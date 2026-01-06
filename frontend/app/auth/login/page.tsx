@@ -44,10 +44,16 @@ function LoginForm() {
         }
     };
 
+    const successParam = searchParams.get('success');
     let displayError = formError;
+    let displaySuccess = '';
+
+    if (successParam === 'verify_email') {
+        displaySuccess = '✅ Account created successfully! Please check your email to verify your account before logging in.';
+    }
+
     if (!displayError && errorParam) {
         if (errorParam === 'auth_failed') displayError = 'Authentication failed. Please try again.';
-        else if (errorParam === 'verify_email') displayError = 'Signup successful! Please check your email to verify your account (check console if using dummy email service).';
         else if (errorParam === 'no_token') displayError = 'Login failed. No token received.';
         else displayError = 'An error occurred.';
     }
@@ -58,8 +64,14 @@ function LoginForm() {
                 <h1 className="text-3xl font-bold text-center text-zinc-900 dark:text-white mb-2">Welcome Back</h1>
                 <p className="text-center text-zinc-500 mb-8">Sign in to your account</p>
 
+                {displaySuccess && (
+                    <div className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-3 rounded-lg text-sm text-center mb-6">
+                        {displaySuccess}
+                    </div>
+                )}
+
                 {displayError && (
-                    <div className={`p-3 rounded-lg text-sm text-center mb-6 ${errorParam === 'verify_email' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                    <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm text-center mb-6">
                         {displayError}
                     </div>
                 )}

@@ -20,9 +20,8 @@ export default function SignupPage() {
 
         try {
             await signup({ name, email, password });
-            // Redirect to login or show success message (verify email)
-            // router.push('/auth/login?error=verify_email');
-            router.push('/auth/login');
+            // Redirect to login with email verification message
+            router.push('/auth/login?success=verify_email');
         } catch (err: any) {
             setError(err.message);
         } finally {

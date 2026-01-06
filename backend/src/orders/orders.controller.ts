@@ -1,16 +1,22 @@
-import { Body, Controller, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, UseGuards, Logger, InternalServerErrorException } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-// import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'; // Assume this exists or will be created
+import { CreateOrderDto } from './dto/create-order.dto';
 
 @Controller('orders')
 export class OrdersController {
+    private readonly logger = new Logger(OrdersController.name);
+
     constructor(private readonly ordersService: OrdersService) { }
 
-    // @UseGuards(JwtAuthGuard) // Enable authentication later
     @Post()
-    create(@Body() createOrderDto: any, @Request() req) {
-        // createOrderDto.userId = req.user.userId; // valid when auth is on
-        return this.ordersService.create(createOrderDto);
+    async create(@Body() createOrderDto: CreateOrderDto) {
+        this.logger.log(`Received order request: ${JSON.stringify(createOrderDto)}`);
+        try {
+            return await this.ordersService.create(createOrderDto);
+        } catch (error) {
+            this.logger.error(`Error in OrdersController: ${error.message}`, error.stack);
+            throw new InternalServerErrorException(error.message);
+        }
     }
 
     // @UseGuards(JwtAuthGuard)

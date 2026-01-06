@@ -15,6 +15,8 @@ export class Order {
                 title: { type: String, required: true },
                 quantity: { type: Number, required: true },
                 price: { type: Number, required: true },
+                imageUrl: { type: String },
+                description: { type: String },
             },
         ],
         required: true,
@@ -24,6 +26,8 @@ export class Order {
         title: string;
         quantity: number;
         price: number;
+        imageUrl?: string;
+        description?: string;
     }[];
 
     @Prop({ required: true })
@@ -34,6 +38,30 @@ export class Order {
 
     @Prop()
     stripePaymentId: string;
+
+    @Prop({
+        type: {
+            fullName: String,
+            phone: String,
+            addressLine1: String,
+            addressLine2: String,
+            city: String,
+            state: String,
+            postalCode: String,
+            country: String,
+        },
+        default: null,
+    })
+    shippingAddress: {
+        fullName?: string;
+        phone?: string;
+        addressLine1?: string;
+        addressLine2?: string;
+        city?: string;
+        state?: string;
+        postalCode?: string;
+        country?: string;
+    };
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
