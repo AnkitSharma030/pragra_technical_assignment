@@ -110,12 +110,12 @@ export default function SignupPage() {
                     >
                         Google
                     </button>
-                    {/* <button
+                    <button
                         onClick={handleFacebookLogin}
                         className="flex items-center justify-center gap-2 px-4 py-2 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 font-medium"
                     >
                         Facebook
-                    </button> */}
+                    </button>
                 </div>
 
                 <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-400">
