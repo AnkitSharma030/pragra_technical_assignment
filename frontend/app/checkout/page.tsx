@@ -7,7 +7,8 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { API_URL } from '@/api/client';
-``
+import { savePayment } from '@/api/payment';
+
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_51P...');
 
 const CheckoutForm = () => {
@@ -71,6 +72,18 @@ const CheckoutForm = () => {
             setProcessing(false);
         } else {
             if (result.paymentIntent.status === 'succeeded') {
+                // Save payment to DB
+                try {
+                    await savePayment({
+                        userId: user?._id || 'guest-user',
+                        stripePaymentId: result.paymentIntent.id,
+                        amount: Math.round(cartTotal * 100), // Amount in cents
+                        status: 'succeeded'
+                    });
+                } catch (err) {
+                    console.error("Failed to save payment record", err);
+                }
+
                 // Create order with shipping address
                 await fetch(`${API_URL}/orders`, {
                     method: 'POST',

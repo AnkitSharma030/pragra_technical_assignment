@@ -48,6 +48,12 @@ export default function Navbar() {
                             >
                                 Orders
                             </Link>
+                            <Link
+                                href="/payment-history"
+                                className={`text-sm font-medium transition-colors ${isActive('/payment-history') ? 'text-indigo-600 dark:text-indigo-400' : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'}`}
+                            >
+                                Payments
+                            </Link>
                         </div>
                     }
 
