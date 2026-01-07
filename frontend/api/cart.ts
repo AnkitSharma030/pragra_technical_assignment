@@ -6,9 +6,9 @@ export const getCart = async () => {
 
 export const addToCart = async (product: {
     productId: string;
-    title: string;
+    name: string;
     price: number;
-    imageUrl: string;
+    image: string;
     description?: string;
     category?: string;
 }) => {

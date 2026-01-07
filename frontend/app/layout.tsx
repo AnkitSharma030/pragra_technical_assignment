@@ -34,9 +34,6 @@ export default function RootLayout({
       >
         <AuthProvider>
           <CartProvider>
-            <Suspense fallback={null}>
-              <AuthHandler />
-            </Suspense>
             <Navbar />
             {children}
           </CartProvider>

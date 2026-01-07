@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
 import * as nodemailer from 'nodemailer';
+import { log } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +28,8 @@ export class AuthService {
       password: hashedPassword,
       verificationToken,
     });
+
+    console.log("verificationToken", verificationToken);
 
     // send verification email
     await this.sendVerificationEmail(email, verificationToken);
@@ -55,6 +58,7 @@ export class AuthService {
   }
 
   async verifyEmail(token: string) {
+    console.log("token", token)
     const user = await this.usersService.verifyUser(token);
     if (!user) {
       throw new BadRequestException('Invalid or expired token');
@@ -63,7 +67,7 @@ export class AuthService {
     return { message: 'Email verified successfully' };
   }
 
-  async sendVerificationEmail(email: string, token: string) {
+  async sendVerificationEmail(email: string, verificationToken: string) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -72,13 +76,14 @@ export class AuthService {
       },
     });
 
-    const verificationUrl = `http://localhost:3000/auth/verify?token=${token}`;
+    const verificationUrl = `${process.env.FRONTEND_URL}/auth/verify?token=${verificationToken}`;
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
       subject: 'Verify your email',
-      html: `<p>Click to verify your email:</p>
+      html: ` <p>Hi, Welocome to Pragra. Kindly verify youe email to complete your registration.</p>
+      <p>Click to verify your email:</p>
              <a href="${verificationUrl}">${verificationUrl}</a>`,
     });
   }
@@ -96,6 +101,12 @@ export class AuthService {
       }
       if (facebookId && !user.facebookId) {
         user.facebookId = facebookId;
+        await user.save();
+      }
+
+      // Fix: If user logs in via OAuth, trust the provider and verify the account
+      if (!user.isVerified) {
+        user.isVerified = true;
         await user.save();
       }
     } else {

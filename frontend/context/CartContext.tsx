@@ -31,6 +31,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     const [loading, setLoading] = useState(false);
     const { user, token } = useAuth();
 
+    // Track who 'owns' the current cart data to prevent leakage
+    const [cartOwner, setCartOwner] = useState<'guest' | string>('guest');
+
     // Load cart based on authentication status
     useEffect(() => {
         const loadCart = async () => {
@@ -45,6 +48,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                         _id: item.productId,
                     }));
                     setCart(mappedItems);
+                    setCartOwner(user._id);
                 } catch (error) {
                     console.error('Failed to load cart from backend', error);
                     // Fallback to local storage
@@ -52,11 +56,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                     if (savedCart) {
                         setCart(JSON.parse(savedCart));
                     }
+                    setCartOwner(user._id);
                 } finally {
                     setLoading(false);
                 }
             } else {
                 // Load from local storage for guests
+                // Important: Only load guest cart if we are truly in guest mode
+                setCartOwner('guest');
                 const savedCart = localStorage.getItem('cart_guest');
                 if (savedCart) {
                     try {
@@ -64,31 +71,41 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                     } catch (e) {
                         console.error('Failed to parse cart', e);
                     }
+                } else {
+                    setCart([]);
                 }
             }
         };
 
+        // When user changes, we effectively reset the cart state logic
         loadCart();
     }, [user, token]);
 
     // Save cart to appropriate storage
     useEffect(() => {
-        if (user) {
-            localStorage.setItem(`cart_${user._id}`, JSON.stringify(cart));
-        } else {
-            localStorage.setItem('cart_guest', JSON.stringify(cart));
+        // Guard: Only save if the current cart state belongs to the current user context
+        // This prevents saving User A's cart to Guest Storage immediately upon logout
+        const currentContextOwner = user ? user._id : 'guest';
+
+        if (cartOwner === currentContextOwner) {
+            if (user) {
+                localStorage.setItem(`cart_${user._id}`, JSON.stringify(cart));
+            } else {
+                localStorage.setItem('cart_guest', JSON.stringify(cart));
+            }
         }
-    }, [cart, user]);
+    }, [cart, user, cartOwner]);
 
     const addToCart = async (product: any) => {
+        console.log("Added to cart", product);
         if (token && user) {
             // Add to backend for authenticated users
             try {
                 const response = await cartApi.addToCart({
                     productId: product._id,
-                    title: product.name,
+                    name: product.name,
                     price: product.price,
-                    imageUrl: product.image,
+                    image: product.image,
                     description: product.description,
                     category: product.category,
                 });
@@ -112,7 +129,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
                             : item
                     );
                 }
-                return [...prevCart, { ...product, quantity: 1 }];
+                return [...prevCart, {
+                    ...product,
+                    title: product.name,
+                    imageUrl: product.image,
+                    quantity: 1
+                }];
             });
         }
     };

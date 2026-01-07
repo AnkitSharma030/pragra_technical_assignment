@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signup } from '@/api/auth';
+import { API_URL } from '@/api/client';
 
 export default function SignupPage() {
     const [name, setName] = useState('');
@@ -27,6 +28,15 @@ export default function SignupPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+
+    const handleGoogleLogin = () => {
+        window.location.href = `${API_URL}/auth/google`;
+    };
+
+    const handleFacebookLogin = () => {
+        window.location.href = `${API_URL}/auth/facebook`;
     };
 
     return (
@@ -82,6 +92,31 @@ export default function SignupPage() {
                         {loading ? 'Creating Account...' : 'Sign Up'}
                     </button>
                 </form>
+
+
+                <div className="relative mb-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-zinc-200 dark:border-zinc-700"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="px-2 bg-white dark:bg-zinc-900 text-zinc-500">Or continue with</span>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <button
+                        onClick={handleGoogleLogin}
+                        className="flex items-center justify-center gap-2 px-4 py-2 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 font-medium"
+                    >
+                        Google
+                    </button>
+                    <button
+                        onClick={handleFacebookLogin}
+                        className="flex items-center justify-center gap-2 px-4 py-2 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 font-medium"
+                    >
+                        Facebook
+                    </button>
+                </div>
 
                 <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-400">
                     Already have an account?{' '}

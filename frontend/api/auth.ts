@@ -13,3 +13,7 @@ export const login = async (credentials: { email: string; password: string }) =>
         body: JSON.stringify(credentials),
     });
 };
+
+export const verifyEmail = async (token: string) => {
+    return apiClient(`/auth/verify?token=${token}`);
+};
